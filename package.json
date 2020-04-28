@@ -2,15 +2,17 @@
   "name": "fmovies-sync",
   "version": "0.1.0",
   "description": "Sync playback in FMovies",
-  "main": "server.js",
-  "author": "Yago Méndez Vidal",
-  "private": true,
+  "homepage": "https://github.com/dsmania/fmovies-sync",
+  "bugs": { "url": "https://github.com/dsmania/fmovies-sync/issues" },
   "license": "BSD-3-Clause",
+  "author": "Yago Méndez Vidal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "express": "~4.17.1",
     "socket.io": "~2.3.0"
   },
-  "scripts": {
-    "start": "node server.js"
-  }
+  "private": true
 }
