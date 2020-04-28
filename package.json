@@ -1,0 +1,16 @@
+{
+  "name": "fmovies-sync",
+  "version": "0.1.0",
+  "description": "Sync playback in FMovies",
+  "main": "server.js",
+  "author": "Yago Méndez Vidal",
+  "private": true,
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "express": "~4.17.1",
+    "socket.io": "~2.3.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
