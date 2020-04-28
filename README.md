@@ -1,1 +1,3 @@
-# fmovies-sync
+# FMovies Sync
+
+Sync playback in FMovies
