@@ -1,18 +1,38 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var port = process.env.PORT || 3000;
+const io = require('socket.io');
+const server = io.listen(9000);
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
+var movies = new Map();
 
-io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-  });
-});
+server.on('connection', (socket) = > {
+    socket.on('join', (msg) => {
+        var id = msg;
+        var movieData = movies.get(id);
+        if (movieData == null) {
+            movieData = {
+                connections = new Set(),
+                state = null
+            };
+        }
 
-http.listen(port, function(){
-  console.log('listening on *:' + port);
+        movieData.connections.add(socket);
+
+        if (movieData.lastCommand != null) {
+            socket.send(movieData.state.command, movieData.state.parameters);
+        }
+    });
+
+    socket.on('leave', (msg) => {
+        var id = msg;
+        var movieData = movies.get(id);
+        if (movieData.connections == null) {
+            movieData.connections = {};
+        }
+        if (!movieData.connections.includes(socket)) {
+            movieData.connections.push(socket);
+        }
+    });
+
+    socket.on('play', (msg) => {
+        io.emit('play', msg);
+    });
 });
