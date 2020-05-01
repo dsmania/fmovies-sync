@@ -10,29 +10,56 @@ server.on('connection', (socket) = > {
         if (movieData == null) {
             movieData = {
                 connections = new Set(),
-                state = null
+                command = null,
+                position = null,
+                dateTime = null
             };
         }
 
         movieData.connections.add(socket);
 
-        if (movieData.lastCommand != null) {
-            socket.send(movieData.state.command, movieData.state.parameters);
+        if (movieData.command != null) {
+            socket.send('sync', movieData.command + ':' + movieData.position + ':' + movieData.dateTime);
         }
     });
 
     socket.on('leave', (msg) => {
         var id = msg;
         var movieData = movies.get(id);
-        if (movieData.connections == null) {
-            movieData.connections = {};
+        if (movieData == null) {
+            return;
         }
-        if (!movieData.connections.includes(socket)) {
-            movieData.connections.push(socket);
+        movieData.connections.delete(socket);
+        if (movieData.connections.size == 0) {
+            movieData.command = null;
+            movieData.position = null;
+            movieData.dateTime = null;
         }
     });
 
-    socket.on('play', (msg) => {
-        io.emit('play', msg);
+    socket.on('disconnect', (msg) => {
+        for (const [id, movieData] of movies.entries()) {
+            if (movieData != null) {
+                movieData.connections.delete(socket);
+                if (movieData.connections.size == 0) {
+                    movieData.command = null;
+                    movieData.position = null;
+                    movieData.dateTime = null;
+                }
+            }
+        }
+    });
+
+    socket.on('sync', (msg) => {
+        for (const [id, movieData] of movies.entries()) {
+            if (movieData != null) {
+                movieData.connections.delete(socket);
+                if (movieData.connections.size == 0) {
+                    movieData.command = null;
+                    movieData.position = null;
+                    movieData.dateTime = null;
+                }
+            }
+        }
     });
 });
