@@ -6,6 +6,7 @@ var lastEvents = new Map();
 
 server.on('connection', (socket) => {
     socket.on('join', (movie) => {
+        console.log(socket.id + ': join(' + movie + ')');
         socket.join(movie, () => {
             var lastEvent = lastEvents.get(movie);
             if (lastEvent != null) {
@@ -15,6 +16,7 @@ server.on('connection', (socket) => {
     });
 
     socket.on('leave', (movie) => {
+        console.log(socket.id + ': leave(' + movie + ')');
         socket.leave(movie, () => {
             if (socket.adapter.rooms[movie] == null) {
                 lastEvents.delete(movie);
@@ -23,6 +25,7 @@ server.on('connection', (socket) => {
     });
 
     socket.on('sync', (command, position, dateTime) => {
+        console.log(socket.id + ': sync(' + command + ', ' + position + ', ' + dateTime + ')');
         Object.keys(socket.adapter.rooms).forEach((room) => {
             socket.to(room).emit('sync', command, position, dateTime);
 
