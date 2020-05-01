@@ -1,9 +1,14 @@
-const io = require('socket.io');
-const server = io.listen(9000);
+//const io = require('socket.io');
+//const server = io.listen(9000);
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+server.listen(9000);
 
 var lastEvents = new Map();
 
-server.on('connection', (socket) => {
+io.on('connection', (socket) => {
     socket.on('join', (movie) => {
         socket.join(movie, () => {
             var lastEvent = lastEvents.get(movie);
