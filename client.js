@@ -4,7 +4,7 @@
 // @version      0.1.0
 // @description  Synchronizes playback in FMovies
 // @author       Yago Méndez Vidal
-// @match        https://mcloud.to/embed/*
+// @include      https://mcloud*.to/embed/*
 // @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js
 // @run-at       document-idle
@@ -13,74 +13,88 @@
 (function() {
     'use strict';
 
-    var id = window.location.href.replace(/https?:\/\/mcloud\.to\/embed\/(\w{6})\?.*/g, '$1');
+    var id = window.location.href.replace(/https?:\/\/mcloud\d?\.to\/embed\/(\w{6})\?.*/g, '$1');
     var synced = false;
     var syncing = false;
-    var seekTo = null;
 
-    var socket = io();
+    const socket = io('http://localhost:9000');
 
-    var player = jwplayer();
-    player.on('play', function(e) {
-        if (syncing) {
+    socket.on('sync', (command, position, dateTime) => {
+        if (!synced) {
             return;
         }
 
-        const { oldstate, viewable, playReason } = e;
-        if (player.getState() != 'playing') {
-            player.play();
+        var offset;
+        if (command == 'play') {
+            syncing = true;
+            offset = position + (new Date().getTime() - dateTime) / 1000;
+            if (Math.abs(player.getPosition() - offset) > 1) {
+                player.seek(offset);
+            }
+            if (player.getState() != 'playing') {
+                player.play();
+            }
+            syncing = false;
+        } else if (command != 'pause') {
+            syncing = true;
+            offset = position + (new Date().getTime() - dateTime) / 1000;
+            if (Math.abs(player.getPosition() - offset) > 1) {
+                player.seek(offset);
+            }
+            if (player.getState() != 'paused') {
+                player.pause();
+            }
+            syncing = false;
+        } else if (command != 'stop') {
+            syncing = true;
+            if (player.getState() != 'idle') {
+                player.stop();
+            }
+            syncing = false;
+        } else if (command != 'seek') {
+            syncing = true;
+            offset = position + (new Date().getTime() - dateTime) / 1000;
+            if (Math.abs(player.getPosition() - offset) > 1) {
+                player.seek(offset);
+            }
+            syncing = false;
         }
+    });
+
+    const player = jwplayer();
+    player.on('play', function(e) {
+        if (!synced || syncing) {
+            return;
+        }
+        socket.emit('sync', 'play', player.getPosition(), new Date().getTime());
     });
     player.on('pause', function(e) {
-        if (syncing) {
+        if (!synced || syncing) {
             return;
         }
-
-        const { oldstate, viewable, pauseReason } = e;
-        if (player.getState() != 'paused') {
-            player.pause();
-        }
+        socket.emit('sync', 'pause', player.getPosition(), new Date().getTime());
     });
     player.on('idle', function(e) {
-        if (syncing) {
+        if (!synced || syncing) {
             return;
         }
-
-        const { oldstate } = e;
-        if (player.getState() != 'idle') {
-            player.stop();
-        }
+        socket.emit('sync', 'stop', 0, new Date().getTime());
     });
     player.on('seek', function(e) {
-        if (syncing) {
+        if (!synced || syncing) {
             return;
         }
-
         const { position, offset } = e;
-        seekTo = offset;
-    });
-    player.on('seeked', function() {
-        if (syncing) {
-            return;
-        }
-
-        if (seekTo != null && player.getPosition().toFixed(0) != seekTo.toFixed(0)) {
-            seekTo = null;
-            player.seek(seekTo);
-        }
+        socket.emit('sync', 'seek', offset, new Date().getTime());
     });
 
     function sync() {
-        // Get server state
-        // if server value -> write local value
-        // else -> write server value
-        // install listeners
-
+        socket.join(id);
         synced = true;
     }
-
     function unsync() {
         synced = false;
+        socket.leave(id);
     }
 
     var syncButton = document.createElement('DIV');

@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "Sync playback in FMovies",
   "homepage": "https://github.com/dsmania/fmovies-sync",
-  "bugs": { "url": "https://github.com/dsmania/fmovies-sync/issues" },
+  "bugs": {
+    "url": "https://github.com/dsmania/fmovies-sync/issues"
+  },
   "license": "BSD-3-Clause",
   "author": "Yago Méndez Vidal",
   "main": "server.js",
