@@ -17,7 +17,7 @@
     var synced = false;
     var syncing = false;
 
-    const socket = io('https://fmovies-sync.herokuapp.com:9000');
+    const socket = io('https://fmovies-sync.herokuapp.com/');
 
     socket.on('sync', (command, position, dateTime) => {
         if (!synced) {
