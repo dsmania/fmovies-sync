@@ -1,6 +1,7 @@
 const io = require('socket.io');
 const server = io.listen(process.env.PORT || 9000);
 server.origins('*:*');
+console.log('Server running in port ' + process.env.PORT || 9000);
 
 var lastEvents = new Map();
 
