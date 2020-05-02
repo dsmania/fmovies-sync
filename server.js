@@ -39,7 +39,7 @@ server.on('connection', (socket) => {
             } else if (command != 'seek') {
                 var lastEvent = lastEvents.get(room);
                 if (lastEvent != null) {
-                    lastEvent.position = postion;
+                    lastEvent.position = position;
                     lastEvent.dateTime = dateTime;
                 } else {
                     lastEvents.set(room, {
