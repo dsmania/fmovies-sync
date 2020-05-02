@@ -1,5 +1,5 @@
 const io = require('socket.io');
-const server = io.listen(9000);
+const server = io.listen(process.env.PORT || 9000);
 server.origins('*:*');
 
 var lastEvents = new Map();
