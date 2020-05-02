@@ -1,11 +1,15 @@
-const io = require('socket.io');
-const server = io.listen(process.env.PORT || 9000);
-server.origins('*:*');
-console.log('Server running in port ' + process.env.PORT || 9000);
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http, { origins: '*:*' });
+var port = process.env.PORT || 9000;
+
+http.listen(port, function(){
+    console.log('Server running in port ' + port);
+});
 
 var lastEvents = new Map();
 
-server.on('connection', (socket) => {
+io.on('connection', (socket) => {
     socket.on('join', (movie) => {
         console.log(socket.id + ': join(' + movie + ')');
         socket.join(movie, () => {
