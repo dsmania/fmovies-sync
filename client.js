@@ -17,7 +17,7 @@
     var synced = false;
     var syncing = false;
 
-    const socket = io('http://localhost:9000');
+    const socket = io('https://fmovies-sync.herokuapp.com:9000');
 
     socket.on('sync', (command, position, dateTime) => {
         if (!synced) {
@@ -89,12 +89,12 @@
     });
 
     function sync() {
-        socket.join(id);
+        socket.emit('join', id);
         synced = true;
     }
     function unsync() {
         synced = false;
-        socket.leave(id);
+        socket.emit('leave', id);
     }
 
     var syncButton = document.createElement('DIV');
