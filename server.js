@@ -1,21 +1,9 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http, { origins: '*:*' });
-var port = process.env.PORT || 9000;
-
-app.all('/', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-    next();
-});
-
-http.listen(port, function(){
-    console.log('Server running in port ' + port);
-});
+const io = require('socket.io');
+const server = io.listen(process.env.PORT || 9000);
 
 var lastEvents = new Map();
 
-io.on('connection', (socket) => {
+server.on('connection', (socket) => {
     socket.on('join', (movie) => {
         console.log(socket.id + ': join(' + movie + ')');
         socket.join(movie, () => {
