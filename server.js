@@ -3,6 +3,12 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http, { origins: '*:*' });
 var port = process.env.PORT || 9000;
 
+app.all('/', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    next();
+});
+
 http.listen(port, function(){
     console.log('Server running in port ' + port);
 });
