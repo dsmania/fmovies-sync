@@ -1,6 +1,6 @@
 const io = require('socket.io');
-io.origins('*:*');
 const server = io.listen(9000);
+server.origins('*:*');
 
 var lastEvents = new Map();
 
