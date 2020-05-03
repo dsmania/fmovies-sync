@@ -8,7 +8,7 @@ This is a simple application that adds a synchronizing functionality to the play
 
 Under the hood, this adds a button to the player using a Tampermonkey script; this script connects to a node running in Heroku using Socket.IO and broadcasts any command for each movie to all the participants.
 
-This was developed as a need to watch movies at the same time by a group of friends during the lockdown for COVID-19 in 2020. If you're one of the lucky participants, you can check the page for [Ciclo de Cine de Mierda](https://www.facebook.com/groups/2547474055473448/).
+This was developed as a need to watch movies at the same time by a group of friends during the lockdown for COVID-19 in 2020. If you're one of the lucky participants, you can check the page for [Ciclo de Cine de Mierda remote revival](https://www.facebook.com/groups/2547474055473448/).
 
 ## Installation
 
