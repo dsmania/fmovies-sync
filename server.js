@@ -9,7 +9,7 @@ server.on('connection', (socket) => {
         socket.join(movie, () => {
             var lastEvent = lastEvents.get(movie);
             if (lastEvent != null) {
-                socket.emit('time', new Date().getTime());
+                socket.emit('adjust', new Date().getTime());
                 socket.emit('sync', lastEvent.command, lastEvent.position, lastEvent.dateTime);
             }
         });
