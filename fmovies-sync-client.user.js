@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FMovies Sync
 // @namespace    http://dsmania.github.io/
-// @version      0.1.0
+// @version      0.1.1
 // @description  Synchronizes playback in FMovies
 // @author       Yago Méndez Vidal
 // @include      https://mcloud*.to/embed/*
@@ -20,10 +20,15 @@
     var syncing = false;
     var lastUpdate = 0;
     var timeout;
+    var timeDiff = 0;
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
+    socket.on('time', (serverTime) => {
+        timeDiff = new Date().getTime() - serverTime;
+    });
     socket.on('sync', (command, position, dateTime) => {
+        dateTime += timeDiff;
         if (!synced || dateTime < lastUpdate) {
             return;
         }
@@ -86,26 +91,26 @@
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'play', player.getPosition(), new Date().getTime());
+        socket.emit('sync', 'play', player.getPosition(), new Date().getTime() - timeDiff);
     });
     player.on('pause', function(e) {
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'pause', player.getPosition(), new Date().getTime());
+        socket.emit('sync', 'pause', player.getPosition(), new Date().getTime() - timeDiff);
     });
     player.on('idle', function(e) {
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'stop', 0, new Date().getTime());
+        socket.emit('sync', 'stop', 0, new Date().getTime() - timeDiff);
     });
     player.on('seek', function(e) {
         if (!synced || syncing) {
             return;
         }
         const { position, offset } = e;
-        socket.emit('sync', 'seek', offset, new Date().getTime());
+        socket.emit('sync', 'seek', offset, new Date().getTime() - timeDiff);
     });
 
     function sync() {
