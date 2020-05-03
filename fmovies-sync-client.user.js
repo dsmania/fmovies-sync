@@ -20,15 +20,15 @@
     var syncing = false;
     var lastUpdate = 0;
     var timeout;
-    var timeDiff = 0;
+    var timeAdjust = 0;
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
     socket.on('adjust', (serverTime) => {
-        timeDiff = new Date().getTime() - serverTime;
+        timeAdjust = new Date().getTime() - serverTime;
     });
     socket.on('sync', (command, position, dateTime) => {
-        dateTime += timeDiff;
+        dateTime += timeAdjust;
         if (!synced || dateTime < lastUpdate) {
             return;
         }
@@ -91,26 +91,26 @@
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'play', player.getPosition(), new Date().getTime() - timeDiff);
+        socket.emit('sync', 'play', player.getPosition(), new Date().getTime() - timeAdjust);
     });
     player.on('pause', function(e) {
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'pause', player.getPosition(), new Date().getTime() - timeDiff);
+        socket.emit('sync', 'pause', player.getPosition(), new Date().getTime() - timeAdjust);
     });
     player.on('idle', function(e) {
         if (!synced || syncing) {
             return;
         }
-        socket.emit('sync', 'stop', 0, new Date().getTime() - timeDiff);
+        socket.emit('sync', 'stop', 0, new Date().getTime() - timeAdjust);
     });
     player.on('seek', function(e) {
         if (!synced || syncing) {
             return;
         }
         const { position, offset } = e;
-        socket.emit('sync', 'seek', offset, new Date().getTime() - timeDiff);
+        socket.emit('sync', 'seek', offset, new Date().getTime() - timeAdjust);
     });
 
     function sync() {
