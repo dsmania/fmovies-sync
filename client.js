@@ -13,52 +13,72 @@
 (function() {
     'use strict';
 
+    const bufferingTime = 2000;
+
     var id = window.location.href.replace(/https?:\/\/mcloud\d?\.to\/embed\/(\w{6})\?.*/g, '$1');
     var synced = false;
     var syncing = false;
+    var lastUpdate = 0;
+    var timeout;
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
     socket.on('sync', (command, position, dateTime) => {
-        if (!synced) {
+        if (!synced || dateTime < lastUpdate) {
             return;
         }
 
-        var offset;
+        window.clearTimeout(timeout);
+        var newPosition;
+
         if (command == 'play') {
             syncing = true;
-            offset = position + (new Date().getTime() - dateTime) / 1000;
-            if (Math.abs(player.getPosition() - offset) > 1) {
-                player.seek(offset);
-            }
-            if (player.getState() != 'playing') {
-                player.play();
-            }
-            syncing = false;
-        } else if (command != 'pause') {
-            syncing = true;
-            offset = position + (new Date().getTime() - dateTime) / 1000;
-            if (Math.abs(player.getPosition() - offset) > 1) {
-                player.seek(offset);
-            }
-            if (player.getState() != 'paused') {
-                player.pause();
-            }
-            syncing = false;
-        } else if (command != 'stop') {
-            syncing = true;
-            if (player.getState() != 'idle') {
+            newPosition = position + (new Date().getTime() - dateTime) / 1000;
+            if (newPosition > player.getDuration()) {
                 player.stop();
+                syncing = false;
+            } else if (Math.abs(newPosition - player.getPosition()) > 1) {
+                player.seek(newPosition + bufferingTime / 1000);
+                timeout = window.setTimeout(() => {
+                    player.play();
+                    syncing = false;
+                }, bufferingTime);
+            } else {
+                player.play();
+                syncing = false;
             }
-            syncing = false;
-        } else if (command != 'seek') {
+        } else if (command == 'pause') {
             syncing = true;
-            offset = position + (new Date().getTime() - dateTime) / 1000;
-            if (Math.abs(player.getPosition() - offset) > 1) {
-                player.seek(offset);
+            newPosition = position + (new Date().getTime() - dateTime) / 1000;
+            if (newPosition > player.getDuration()) {
+                player.stop();
+                syncing = false;
+            } else if (Math.abs(newPosition - player.getPosition()) > 1) {
+                player.pause();
+                player.seek(newPosition);
+                syncing = false;
+            } else {
+                player.pause();
+                syncing = false;
             }
+        } else if (command == 'stop') {
+            syncing = true;
+            player.stop();
             syncing = false;
+        } else if (command == 'seek') {
+            syncing = true;
+            newPosition = position + (new Date().getTime() - dateTime) / 1000;
+            if (newPosition > player.getDuration()) {
+                player.stop();
+                syncing = false;
+            } else if (Math.abs(newPosition - player.getPosition()) > 1) {
+                    player.seek(newPosition);
+                    syncing = false;
+            } else {
+                syncing = false;
+            }
         }
+        lastUpdate = dateTime;
     });
 
     const player = jwplayer();
@@ -150,5 +170,4 @@
             sync();
         }
     };
-
 })();
