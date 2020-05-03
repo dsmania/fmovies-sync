@@ -5,13 +5,15 @@ var lastEvents = new Map();
 
 server.on('connection', (socket) => {
     socket.on('join', (movie) => {
-        console.log(socket.id + ': join(' + movie + ')');
         socket.join(movie, () => {
             socket.emit('adjust', new Date().getTime());
             var lastEvent = lastEvents.get(movie);
             if (lastEvent != null) {
                 socket.emit('sync', lastEvent.command, lastEvent.position, lastEvent.dateTime);
             }
+            io.in(movie).clients((err, clients) => {
+                console.log(socket.id + ': join(' + movie + ') -> ' + clients.length);
+            });
         });
     });
 
@@ -21,6 +23,9 @@ server.on('connection', (socket) => {
             if (socket.adapter.rooms[movie] == null) {
                 lastEvents.delete(movie);
             }
+            io.in(movie).clients((err, clients) => {
+                console.log(socket.id + ': leave(' + movie + ') -> ' + clients.length);
+            });
         });
     });
 
