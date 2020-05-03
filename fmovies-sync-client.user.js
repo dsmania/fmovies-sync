@@ -24,7 +24,7 @@
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
-    socket.on('time', (serverTime) => {
+    socket.on('adjust', (serverTime) => {
         timeDiff = new Date().getTime() - serverTime;
     });
     socket.on('sync', (command, position, dateTime) => {
