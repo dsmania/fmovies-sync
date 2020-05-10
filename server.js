@@ -1,6 +1,6 @@
 const io = require('socket.io');
-io.set("origins", "*:*");
 const server = io.listen(process.env.PORT || 9000);
+server.set("origins", "*:*");
 
 var lastEvents = new Map();
 
