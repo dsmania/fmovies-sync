@@ -1,4 +1,4 @@
-const io = require('socket.io').(process.env.PORT || 9000, {
+const io = require('socket.io')(process.env.PORT || 9000, {
     origins: '*:*'
 });
 
