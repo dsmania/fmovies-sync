@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
             if (lastEvent != null) {
                 socket.emit('sync', lastEvent.command, lastEvent.position, lastEvent.dateTime);
             }
-            server.in(movie).clients((err, clients) => {
+            io.in(movie).clients((err, clients) => {
                 console.log(socket.id + ': join(' + movie + ') -> ' + clients.length);
             });
         });
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
             if (socket.adapter.rooms[movie] == null) {
                 lastEvents.delete(movie);
             }
-            server.in(movie).clients((err, clients) => {
+            io.in(movie).clients((err, clients) => {
                 console.log(socket.id + ': leave(' + movie + ') -> ' + clients.length);
             });
         });
