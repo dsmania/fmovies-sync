@@ -1,10 +1,15 @@
-const io = require('socket.io');
-const server = io.listen(process.env.PORT || 9000);
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 server.origins("*:*");
+var port = process.env.PORT || 9000;
+
+server.listen(port);
 
 var lastEvents = new Map();
 
-server.on('connection', (socket) => {
+io.on('connection', (socket) => {
     socket.on('join', (movie) => {
         socket.join(movie, () => {
             socket.emit('adjust', new Date().getTime());
