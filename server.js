@@ -1,11 +1,4 @@
-var express = require('express')();
-const cors = require('cors')();
-express.use(cors);
-express.options('*', cors);
-var http = require('https').Server(express);
-http.listen(process.env.PORT || 9000);
-
-const io = require('socket.io')(http);
+const io = require('socket.io').listen(process.env.PORT || 9000);
 
 var lastEvents = new Map();
 

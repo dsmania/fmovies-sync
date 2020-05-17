@@ -15,7 +15,7 @@ This was developed as a need to watch movies at the same time by a group of frie
 1. Install [Tampermonkey](https://www.tampermonkey.net/) on your browser, for instance [Firefox](https://addons.mozilla.org/firefox/addon/tampermonkey/) or [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo).
 2. Add the [FMovies Sync client](https://github.com/dsmania/fmovies-sync/raw/master/fmovies-sync-client.user.js) script.
 
-Note that this will most probably also run with [Greasemonkey](https://www.greasespot.net/) or [Violentmonkey](https://violentmonkey.github.io/), it's just not been tested.
+Note that this will most probably also run with any userscript extension like [Greasemonkey](https://www.greasespot.net/) or [Violentmonkey](https://violentmonkey.github.io/), it has just not been tested.
 
 ## Usage
 
