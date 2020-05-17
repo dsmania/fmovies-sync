@@ -1,4 +1,4 @@
-const io = require('socket.io').listen(process.env.PORT || 9000);
+const io = require('socket.io').listen(process.env.PORT || 9000, { origins: '*:*' });
 
 var lastEvents = new Map();
 
