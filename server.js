@@ -1,4 +1,12 @@
-const io = require('socket.io')(process.env.PORT || 9000, {
+var express = require('express')();
+var http = require('http').Server(express);
+const cors = require('cors');
+express.use(cors());
+express.options('*', cors());
+
+http.listen(process.env.PORT || 9000);
+
+const io = require('socket.io')(http, {
     origins: '*:*'
 });
 
