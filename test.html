@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FMovies Sync</title>
+    <meta charset="UTF-8">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { height: 100%; }
+      body { height: 100%; display: flex; flex-direction: column; align-items: stretch; font: 13px Helvetica, Arial; background: #fff; }
+      #messages { flex-grow: 1; margin: 10px; box-shadow: 3px 3px 3px 3px #ccc; list-style-type: none; overflow: auto; }
+      #messages li { padding: 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+      #messages .error { color: #f00; }
+      #form { display: flex; align-items: stretch; margin: 10px; height: 40px; box-shadow: 3px 3px 3px 3px #ccc; }
+      #form #field { flex-grow: 1; border: 0px; padding: 10px; }
+      #form #send { width: 40px; border: none; font-size: 20px; color: #fff; background: #000; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="field" autocomplete="off" /><button id="send">↲</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(function () {
+            const socket = io('https://fmovies-sync.herokuapp.com');
+            $('#form').submit(function() {
+                var line = $('#field').val().split(' ');
+                if (line.length == 1) {
+                    socket.emit(line[0]);
+                } else if (line.length == 2) {
+                    socket.emit(line[0], line[1]);
+                } else if (line.length == 3) {
+                    socket.emit(line[0], line[1], line[2]);
+                } else if (line.length == 4) {
+                    socket.emit(line[0], line[1], line[2], line[3]);
+                } else {
+                    $('#messages').append($('<li class=\'error\'>').text($('#field').val()));
+                }
+                $('#field').val('');
+                return false;
+            });
+            socket.on('sync', function(command, position, dateTime) {
+                $('#messages').append($('<li>').text(command + ':' + position + ':' + dateTime));
+                window.scrollTo(0, document.body.scrollHeight);
+            });
+        });
+    </script>
+  </body>
+</html>
