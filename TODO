@@ -1,0 +1,6 @@
+TO-DO
+
+- Make the content of the controls cutout instead of black
+- Remove JQuery in test page
+- Add test page as served in Heroku
+- Add local chat entries in test page

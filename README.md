@@ -16,7 +16,7 @@ This was developed as a need to watch movies at the same time by a group of frie
 2. Add the [FMovies Sync client](https://github.com/dsmania/fmovies-sync/raw/master/fmovies-sync-client.user.js) script.
 3. **Whitelist ``mcloud.to`` in AdBlock.**
 
-Note that this will most probably also run with any userscript extension like [Greasemonkey](https://www.greasespot.net/) or [Violentmonkey](https://violentmonkey.github.io/), it has just not been tested.
+Note that this should run on any userscript extension like [Greasemonkey](https://www.greasespot.net/) or [Violentmonkey](https://violentmonkey.github.io/), it has just not been tested.
 
 AdBlock is currently preventing the script to work normally. To make it work it's required to whitelist ``mcloud.to``.
 

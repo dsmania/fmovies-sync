@@ -1,6 +1,6 @@
 {
   "name": "fmovies-sync",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Sync playback in FMovies",
   "homepage": "https://github.com/dsmania/fmovies-sync",
   "bugs": {

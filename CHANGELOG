@@ -1,0 +1,12 @@
+v0.1.2
+ + Participant count added to synchronize tooltip
+ + Per movie fixes added
+ * Icon size adjusted for different resolutions
+
+v0.1.1
+ * Synchronization using server time
+ + Test page readded
+
+v
+0.1.0
+ · Initial release

@@ -24,7 +24,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-        $(function () {
+        (function () {
             const socket = io('https://fmovies-sync.herokuapp.com');
             $('#form').submit(function() {
                 var line = $('#field').val().split(' ');
@@ -46,7 +46,7 @@
                 $('#messages').append($('<li>').text(command + ':' + position + ':' + dateTime));
                 window.scrollTo(0, document.body.scrollHeight);
             });
-        });
+        })();
     </script>
   </body>
 </html>

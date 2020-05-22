@@ -11,6 +11,7 @@ io.on('connection', (socket) => {
                 socket.emit('sync', lastEvent.command, lastEvent.position, lastEvent.dateTime);
             }
             io.in(movie).clients((err, clients) => {
+                io.to(movie).emit('info', clients.length);
                 console.log(socket.id + ': join(' + movie + ') -> ' + clients.length);
             });
         });

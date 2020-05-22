@@ -174,10 +174,63 @@
         }
     };
 
+    var stretchCombo = document.createElement('DIV');
+    stretchCombo.style = 'height: 44px; align-items: center; display: flex; justify-content: center; opacity: 80%;';
+    var stretchComboSelect = document.createElement('SELECT');
+    stretchComboSelect.style = 'width: 20px; height: 16px; margin: 12px; cursor: pointer; font-family: \'Font Awesome 5 Free\'; font-size: 11px; font-weight: 900; text-align-last: center; background-color: #fff; color: #000; border: 0px none; -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none !important;';
+    var stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'uniform';
+    stretchComboSelectOption.title = 'Fit';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'fill';
+    stretchComboSelectOption.title = 'Fill';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'exactfit';
+    stretchComboSelectOption.title = 'Stretch';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'none';
+    stretchComboSelectOption.title = 'Center';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelect.selectedIndex = [ 'uniform', 'fill', 'exactfit', 'none' ].indexOf(player.getStretching());
+    stretchComboSelect.onchange = function(event) {
+        player.setConfig({ stretching: stretchComboSelect.value });
+    };
+    stretchCombo.appendChild(stretchComboSelect);
+    var stretchComboTooltip = document.createElement('DIV');
+    stretchComboTooltip.style = 'position: absolute; bottom: 68px; transition: 100ms cubic-bezier(0, .25, .25, 1) 500ms; transform: translate(0, 50%); visibility: hidden;';
+    var stretchComboTooltipText = document.createElement('DIV');
+    stretchComboTooltipText.innerHTML = 'Image adjust';
+    stretchComboTooltipText.style = 'color: #000; background-color: #fff; font-size: 9px; border-radius: 1px; padding: 4px 10px; opacity: 100%;';
+    stretchComboTooltip.appendChild(stretchComboTooltipText);
+    var stretchComboTooltipPointer = document.createElement('DIV');
+    stretchComboTooltipPointer.style = 'display: block; box-sizing: border-box; position: absolute; top: 100%; left: 50%; width: 10px; height: 9px; border-radius: 1px; transform: translate(-50%, -50%) rotate(45deg); z-index: -1; background-color: #fff;';
+    stretchComboTooltip.appendChild(stretchComboTooltipPointer);
+    stretchCombo.appendChild(stretchComboTooltip);
+    stretchCombo.onmouseover = function() {
+        stretchCombo.style.opacity = '100%';
+        stretchComboTooltip.style.transform = 'none';
+        stretchComboTooltip.style.visibility = 'visible';
+        stretchComboTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 500ms';
+    };
+    stretchCombo.onmouseout = function() {
+        stretchCombo.style.opacity = '80%';
+        stretchComboTooltip.style.transform = 'translate(0, 50%)';
+        stretchComboTooltip.style.visibility = 'hidden';
+        stretchComboTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 0ms';
+    };
+
     var buttonContainer = document.getElementsByClassName('jw-button-container')[0];
     var layoutUi = function() {
         var ccButton = buttonContainer.getElementsByClassName('jw-icon-cc')[0];
         buttonContainer.insertBefore(syncButton, ccButton);
+        buttonContainer.insertBefore(stretchCombo, syncButton);
 
         var fixButtonsSize = function() {
             if (ccButton.clientHeight < 60) {
@@ -193,6 +246,17 @@
                 syncButtonTooltipText.style.padding = '4px 10px';
                 syncButtonTooltipPointer.style.width = '10px';
                 syncButtonTooltipPointer.style.height = '9px';
+
+                stretchCombo.style.height = '44px;';
+                stretchComboSelect.style.width = '20px';
+                stretchComboSelect.style.height = '16px';
+                stretchComboSelect.style.margin = '12px';
+                stretchComboSelect.style.fontSize = '11px';
+                stretchComboTooltip.style.bottom = '68px';
+                stretchComboTooltipText.style.fontSize = '9px';
+                stretchComboTooltipText.style.padding = '4px 10px';
+                stretchComboTooltipPointer.style.width = '10px';
+                stretchComboTooltipPointer.style.height = '9px';
             } else {
                 syncButton.style.width = '60px';
                 syncButton.style.height = '60px';
@@ -206,6 +270,17 @@
                 syncButtonTooltipText.style.padding = '7px 10px';
                 syncButtonTooltipPointer.style.width = '11px';
                 syncButtonTooltipPointer.style.height = '10px';
+
+                stretchCombo.style.height = '60px;';
+                stretchComboSelect.style.width = '25px';
+                stretchComboSelect.style.height = '20px';
+                stretchComboSelect.style.margin = '20px';
+                stretchComboSelect.style.fontSize = '13px';
+                stretchComboTooltip.style.bottom = '83px';
+                stretchComboTooltipText.style.fontSize = '16px';
+                stretchComboTooltipText.style.padding = '7px 10px';
+                stretchComboTooltipPointer.style.width = '11px';
+                stretchComboTooltipPointer.style.height = '10px';
             }
         };
         fixButtonsSize();
@@ -222,23 +297,6 @@
             }
         });
         observer.observe(document, { childList: true, subtree: true });
-    }
-
-    /* Movie fixes */
-    if (id == 'd549xj') { // Sunshine
-        player.setConfig({ aspectratio: '2.39:1', width: '100%', stretching: 'exactfit' });
-        player.on('fullscreen', function(e) {
-            var video = document.getElementsByClassName('jw-video')[0];
-            if (video != null) {
-                if (e.fullscreen) {
-                    setTimeout(function() {
-                        video.style.height = 'calc(100vw/2.39)';
-                    }, 500);
-                } else {
-                    video.style.height = null;
-                }
-            }
-        });
     }
 
 })();
