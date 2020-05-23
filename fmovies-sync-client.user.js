@@ -86,30 +86,30 @@
         }
         lastUpdate = dateTime;
     });
-    socket.on('info', function(participantCount) {
+    socket.on('info', (participantCount) => {
         participants = participantCount;
     });
 
     const player = jwplayer();
-    player.on('play', function(e) {
+    player.on('play', (e) => {
         if (!synced || syncing) {
             return;
         }
         socket.emit('sync', 'play', player.getPosition(), new Date().getTime() - timeAdjust);
     });
-    player.on('pause', function(e) {
+    player.on('pause', (e) => {
         if (!synced || syncing) {
             return;
         }
         socket.emit('sync', 'pause', player.getPosition(), new Date().getTime() - timeAdjust);
     });
-    player.on('idle', function(e) {
+    player.on('idle', (e) => {
         if (!synced || syncing) {
             return;
         }
         socket.emit('sync', 'stop', 0, new Date().getTime() - timeAdjust);
     });
-    player.on('seek', function(e) {
+    player.on('seek', (e) => {
         if (!synced || syncing) {
             return;
         }
@@ -133,53 +133,133 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 
     var syncButton = document.createElement('DIV');
-    syncButton.style = 'width: 44px; height: 44px; cursor: pointer; align-items: center; display: flex; justify-content: center; color: #fff; opacity: 80%;';
+    syncButton.style = 'width: 44px; height: 44px; cursor: pointer; align-items: center; display: flex; justify-content: center; background-color: #0000';
     var syncButtonText = document.createElement('DIV');
-    syncButtonText.style = 'width: 20px; height: 16px; border: 2px solid #fff; text-align: center; line-height: 11px; font-family: \'Font Awesome 5 Free\'; font-size: 9px; font-weight: 900;';
+    syncButtonText.style = 'width: 20px; height: 16px; color: #fffc; background-color: #0000; border: 2px solid #fffc; text-align: center; line-height: 11px; font-family: \'Font Awesome 5 Free\'; font-size: 9px; font-weight: 900; mix-blend-mode: normal;';
     syncButtonText.innerHTML = '';
     syncButton.appendChild(syncButtonText);
     var syncButtonTooltip = document.createElement('DIV');
     syncButtonTooltip.style = 'position: absolute; bottom: 68px; transition: 100ms cubic-bezier(0, .25, .25, 1) 500ms; transform: translate(0, 50%); visibility: hidden;';
     var syncButtonTooltipText = document.createElement('DIV');
     syncButtonTooltipText.innerHTML = 'Synchronize';
-    syncButtonTooltipText.style = 'color: #000; background-color: #fff; font-size: 9px; border-radius: 1px; padding: 4px 10px; opacity: 100%;';
+    syncButtonTooltipText.style = 'color: #000; background-color: #fff; font-size: 9px; border-radius: 1px; padding: 4px 10px;';
     syncButtonTooltip.appendChild(syncButtonTooltipText);
     var syncButtonTooltipPointer = document.createElement('DIV');
     syncButtonTooltipPointer.style = 'display: block; box-sizing: border-box; position: absolute; top: 100%; left: 50%; width: 10px; height: 9px; border-radius: 1px; transform: translate(-50%, -50%) rotate(45deg); z-index: -1; background-color: #fff;';
     syncButtonTooltip.appendChild(syncButtonTooltipPointer);
     syncButton.appendChild(syncButtonTooltip);
-    syncButton.onmouseover = function() {
-        syncButton.style.opacity = '100%';
+    syncButton.onmouseover = (e) => {
+        if (synced) {
+            // TODO
+            syncButtonText.style.color = '#000';
+            syncButtonText.style.borderColor = '#fff';
+            syncButtonText.style.backgroundColor = '#fff';
+            syncButtonText.style.mixBlendMode = 'lighten';
+        } else {
+            syncButtonText.style.color = '#fff';
+            syncButtonText.style.borderColor = '#fff';
+            syncButtonText.style.backgroundColor = '#0000';
+            syncButtonText.style.mixBlendMode = 'normal';
+        }
         syncButtonTooltip.style.transform = 'none';
         syncButtonTooltip.style.visibility = 'visible';
         syncButtonTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 500ms';
     };
-    syncButton.onmouseout = function() {
-        syncButton.style.opacity = '80%';
+    syncButton.onmouseout = (e) => {
+        if (synced) {
+            // TODO
+            syncButtonText.style.color = '#000c';
+            syncButtonText.style.borderColor = '#fff0';
+            syncButtonText.style.backgroundColor = '#fffc';
+            syncButtonText.style.mixBlendMode = 'lighten';
+        } else {
+            syncButtonText.style.color = '#fffc';
+            syncButtonText.style.borderColor = '#fffc';
+            syncButtonText.style.backgroundColor = '#0000';
+            syncButtonText.style.mixBlendMode = 'normal';
+        }
         syncButtonTooltip.style.transform = 'translate(0, 50%)';
         syncButtonTooltip.style.visibility = 'hidden';
         syncButtonTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 0ms';
     };
-    syncButton.onclick = function() {
+    syncButton.onclick = (e) => {
         if (synced) {
             syncButtonText.style.color = '#fff';
-            syncButtonText.style.background = '#0000';
+            syncButtonText.style.borderColor = '#fff';
+            syncButtonText.style.backgroundColor = '#0000';
+            syncButtonText.style.mixBlendMode = 'normal';
             syncButtonTooltipText.innerHTML = 'Synchronize';
             unsync();
         } else {
+            // TODO Copy from onmouseover
             syncButtonText.style.color = '#000';
-            syncButtonText.style.background = '#fff';
+            syncButtonText.style.borderColor = '#fff';
+            syncButtonText.style.backgroundColor = '#fff';
+            syncButtonText.style.mixBlendMode = 'lighten';
             syncButtonTooltipText.innerHTML = 'Synchronized (' + participants + ')';
             sync();
         }
     };
 
+    var stretchCombo = document.createElement('DIV');
+    stretchCombo.style = 'height: 44px; align-items: center; display: flex; justify-content: center; color: fffc;';
+    var stretchComboSelect = document.createElement('SELECT');
+    stretchComboSelect.style = 'width: 20px; height: 16px; margin: 12px; cursor: pointer; font-family: \'Font Awesome 5 Free\'; font-size: 11px; font-weight: 900; text-align-last: center; background-color: #fff; color: #000; border: 0px none; -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none !important;';
+    var stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'uniform';
+    stretchComboSelectOption.title = 'Fit';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'fill';
+    stretchComboSelectOption.title = 'Fill';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'exactfit';
+    stretchComboSelectOption.title = 'Stretch';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelectOption = document.createElement('OPTION');
+    stretchComboSelectOption.value = 'none';
+    stretchComboSelectOption.title = 'Center';
+    stretchComboSelectOption.innerHTML = '';
+    stretchComboSelect.appendChild(stretchComboSelectOption);
+    stretchComboSelect.selectedIndex = [ 'uniform', 'fill', 'exactfit', 'none' ].indexOf(player.getStretching());
+    stretchComboSelect.onchange = (e) => {
+        player.setConfig({ stretching: stretchComboSelect.value });
+    };
+    stretchCombo.appendChild(stretchComboSelect);
+    var stretchComboTooltip = document.createElement('DIV');
+    stretchComboTooltip.style = 'position: absolute; bottom: 68px; transition: 100ms cubic-bezier(0, .25, .25, 1) 500ms; transform: translate(0, 50%); visibility: hidden;';
+    var stretchComboTooltipText = document.createElement('DIV');
+    stretchComboTooltipText.innerHTML = 'Image adjust';
+    stretchComboTooltipText.style = 'color: #000; background-color: #fff; font-size: 9px; border-radius: 1px; padding: 4px 10px;';
+    stretchComboTooltip.appendChild(stretchComboTooltipText);
+    var stretchComboTooltipPointer = document.createElement('DIV');
+    stretchComboTooltipPointer.style = 'display: block; box-sizing: border-box; position: absolute; top: 100%; left: 50%; width: 10px; height: 9px; border-radius: 1px; transform: translate(-50%, -50%) rotate(45deg); z-index: -1; background-color: #fff;';
+    stretchComboTooltip.appendChild(stretchComboTooltipPointer);
+    stretchCombo.appendChild(stretchComboTooltip);
+    stretchCombo.onmouseover = (e) => {
+        stretchCombo.style.color = '#fff';
+        stretchComboTooltip.style.transform = 'none';
+        stretchComboTooltip.style.visibility = 'visible';
+        stretchComboTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 500ms';
+    };
+    stretchCombo.onmouseout = (e) => {
+        stretchCombo.style.color = '#fffc';
+        stretchComboTooltip.style.transform = 'translate(0, 50%)';
+        stretchComboTooltip.style.visibility = 'hidden';
+        stretchComboTooltip.style.transition = '100ms cubic-bezier(0, .25, .25, 1) 0ms';
+    };
+
     var buttonContainer = document.getElementsByClassName('jw-button-container')[0];
-    var layoutUi = function() {
+    function layoutUi() {
         var ccButton = buttonContainer.getElementsByClassName('jw-icon-cc')[0];
         buttonContainer.insertBefore(syncButton, ccButton);
+        buttonContainer.insertBefore(stretchCombo, syncButton);
 
-        var fixButtonsSize = function() {
+        function fixButtonsSize() {
             if (ccButton.clientHeight < 60) {
                 syncButton.style.width = '44px';
                 syncButton.style.height = '44px';
@@ -193,6 +273,17 @@
                 syncButtonTooltipText.style.padding = '4px 10px';
                 syncButtonTooltipPointer.style.width = '10px';
                 syncButtonTooltipPointer.style.height = '9px';
+
+                stretchCombo.style.height = '44px;';
+                stretchComboSelect.style.width = '20px';
+                stretchComboSelect.style.height = '16px';
+                stretchComboSelect.style.margin = '12px';
+                stretchComboSelect.style.fontSize = '11px';
+                stretchComboTooltip.style.bottom = '68px';
+                stretchComboTooltipText.style.fontSize = '9px';
+                stretchComboTooltipText.style.padding = '4px 10px';
+                stretchComboTooltipPointer.style.width = '10px';
+                stretchComboTooltipPointer.style.height = '9px';
             } else {
                 syncButton.style.width = '60px';
                 syncButton.style.height = '60px';
@@ -206,6 +297,17 @@
                 syncButtonTooltipText.style.padding = '7px 10px';
                 syncButtonTooltipPointer.style.width = '11px';
                 syncButtonTooltipPointer.style.height = '10px';
+
+                stretchCombo.style.height = '60px;';
+                stretchComboSelect.style.width = '25px';
+                stretchComboSelect.style.height = '20px';
+                stretchComboSelect.style.margin = '20px';
+                stretchComboSelect.style.fontSize = '13px';
+                stretchComboTooltip.style.bottom = '83px';
+                stretchComboTooltipText.style.fontSize = '16px';
+                stretchComboTooltipText.style.padding = '7px 10px';
+                stretchComboTooltipPointer.style.width = '11px';
+                stretchComboTooltipPointer.style.height = '10px';
             }
         };
         fixButtonsSize();
@@ -214,11 +316,11 @@
     if (buttonContainer != null) {
         layoutUi();
     } else {
-        var observer = new MutationObserver(function() {
+        var observer = new MutationObserver((mutations, observer) => {
             buttonContainer = document.getElementsByClassName('jw-button-container')[0];
             if (buttonContainer != null) {
+                observer.disconnect();
                 layoutUi();
-                this.disconnect();
             }
         });
         observer.observe(document, { childList: true, subtree: true });
@@ -227,11 +329,11 @@
     /* Movie fixes */
     if (id == 'd549xj') { // Sunshine
         player.setConfig({ aspectratio: '2.39:1', width: '100%', stretching: 'exactfit' });
-        player.on('fullscreen', function(e) {
+        player.on('fullscreen', (e) => {
             var video = document.getElementsByClassName('jw-video')[0];
             if (video != null) {
                 if (e.fullscreen) {
-                    setTimeout(function() {
+                    setTimeout(() => {
                         video.style.height = 'calc(100vw/2.39)';
                     }, 500);
                 } else {

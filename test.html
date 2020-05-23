@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FMovies Sync</title>
+    <meta charset="UTF-8">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html { height: 100%; }
+      body { height: 100%; display: flex; flex-direction: column; align-items: stretch; font: 13px Helvetica, Arial; background: #fff; }
+      #messages { flex-grow: 1; margin: 10px; box-shadow: 3px 3px 3px 3px #ccc; list-style-type: none; overflow: auto; }
+      #messages li { padding: 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+      #messages .self { font-weight: bold; }
+      #messages .info { color: #777; }
+      #messages .error { color: #b00; }
+      #form { display: flex; align-items: stretch; margin: 10px; height: 40px; box-shadow: 3px 3px 3px 3px #ccc; }
+      #form #movie { border: 0px; padding: 10px; font-weight: bold; background: #eee; }
+      #form #movie:before { content: "["; }
+      #form #movie:after { content: "]"; }
+      #form #field { flex-grow: 1; border: 0px; padding: 10px; }
+      #form #send { width: 40px; border: none; font-size: 20px; color: #fff; background: #000; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <span id="movie"></span><input id="field" autocomplete="off" /><button id="send">↲</button>
+    </form>
+    <script>
+        (function () {
+            const socket = io('https://fmovies-sync.herokuapp.com');
+            var movies = new Set();
+            // > join(movie)
+            // > leave(movie)
+            // > sync(command, position, dateTime)
+            document.getElementById('form').onsubmit = () => {
+                var messages = document.getElementById('messages');
+                var entry = document.createElement('LI');
+                var text = document.getElementById('field').value;
+                var tokens = text.split(/\s+/);
+                if (text.trim().length == 0) {
+                    return false;
+                } else if (tokens[0] == 'join') {
+                    if (tokens.length == 2) {
+                        socket.emit(tokens[0], tokens[1]);
+                        entry.classList.add('self');
+                        movies.add(tokens[1]);
+                        document.getElementById('movie').innerHTML = new Array(...movies).join(', ');
+                    } else {
+                        entry.classList.add('error');
+                        text = 'Error: "join &lt;movie&gt;" ≠ "' + text + '"';
+                    }
+                } else if (tokens[0] == 'leave') {
+                    if (tokens.length == 2) {
+                        socket.emit(tokens[0], tokens[1]);
+                        entry.classList.add('self');
+                        movies.delete(tokens[1]);
+                        document.getElementById('movie').innerHTML = new Array(...movies).join(', ');
+                    } else {
+                        entry.classList.add('error');
+                        text = 'Error: "leave &lt;movie&gt;" ≠ "' + text + '"';
+                    }
+                } else if (tokens[0] == 'sync') {
+                    if (tokens.length == 4) {
+                        socket.emit(tokens[0], tokens[1], tokens[2], tokens[3]);
+                        entry.classList.add('self');
+                    } else {
+                        entry.classList.add('error');
+                        text = 'Error: "sync command position dateTime" ≠ "' + text + '"';
+                    }
+                } else {
+                    entry.classList.add('error');
+                    text = 'Error: Unknown command. Use: "join &lt;movie&gt;", "leave &lt;movie&gt;", or "sync &lt;command&gt; &lt;position&gt; &lt;dateTime&gt;"';
+                }
+                entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &lt; ' + text;
+                messages.appendChild(entry);
+                messages.scrollTo(0, messages.scrollHeight);
+                document.getElementById('field').value = '';
+                return false;
+            };
+            // < adjust(serverTime)
+            socket.on('adjust', (serverTime) => {
+                var entry = document.createElement('LI');
+                entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; adjust(' + serverTime + ')';
+                messages.appendChild(entry);
+                messages.scrollTo(0, messages.scrollHeight);
+            });
+            // < sync(command, position, dateTime)
+            socket.on('sync', (command, position, dateTime) => {
+                var entry = document.createElement('LI');
+                entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; sync(' + command + ', ' + position + ', ' + dateTime + ')';
+                messages.appendChild(entry);
+                messages.scrollTo(0, messages.scrollHeight);
+            });
+            // < info(participants)
+            socket.on('info', (participants) => {
+                var entry = document.createElement('LI');
+                entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; info(' + participants + ')';
+                messages.appendChild(entry);
+                messages.scrollTo(0, messages.scrollHeight);
+            });
+        })();
+    </script>
+  </body>
+</html>

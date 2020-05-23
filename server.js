@@ -24,6 +24,7 @@ io.on('connection', (socket) => {
                 lastEvents.delete(movie);
             }
             io.in(movie).clients((err, clients) => {
+                io.to(movie).emit('info', clients.length);
                 console.log(socket.id + ': leave(' + movie + ') -> ' + clients.length);
             });
         });
