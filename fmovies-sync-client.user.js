@@ -21,7 +21,7 @@
     var lastUpdate = 0;
     var timeout;
     var timeAdjust = 0;
-    var participants = 0;
+    var numberOfParticipants = 0;
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
@@ -86,8 +86,11 @@
         }
         lastUpdate = dateTime;
     });
-    socket.on('info', (participantCount) => {
-        participants = participantCount;
+    socket.on('info', (participants) => {
+        numberOfParticipants = participants;
+        if (synced) {
+            syncButtonTooltipText.innerHTML = 'Synchronized (' + numberOfParticipants + ')';
+        }
     });
 
     const player = jwplayer();
@@ -203,7 +206,7 @@
             syncButtonIconGlyph.setAttribute('visibility', 'hidden');
             syncButtonIconBackground.setAttribute('fill', '#fff');
             syncButtonIconBackground.setAttribute('mask', 'url(#glyphMask)');
-            syncButtonTooltipText.innerHTML = 'Synchronized (' + participants + ')';
+            syncButtonTooltipText.innerHTML = 'Synchronized (' + numberOfParticipants + ')';
             sync();
         }
     };
