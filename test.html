@@ -36,7 +36,7 @@
             // > sync(command, position, dateTime)
             document.getElementById('form').onsubmit = () => {
                 var messages = document.getElementById('messages');
-                var entry = document.createElement('LI');
+                var entry = document.createElement('li');
                 var text = document.getElementById('field').value;
                 var tokens = text.split(/\s+/);
                 if (text.trim().length == 0) {
@@ -81,21 +81,21 @@
             };
             // < adjust(serverTime)
             socket.on('adjust', (serverTime) => {
-                var entry = document.createElement('LI');
+                var entry = document.createElement('li');
                 entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; adjust(' + serverTime + ')';
                 messages.appendChild(entry);
                 messages.scrollTo(0, messages.scrollHeight);
             });
             // < sync(command, position, dateTime)
             socket.on('sync', (command, position, dateTime) => {
-                var entry = document.createElement('LI');
+                var entry = document.createElement('li');
                 entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; sync(' + command + ', ' + position + ', ' + dateTime + ')';
                 messages.appendChild(entry);
                 messages.scrollTo(0, messages.scrollHeight);
             });
             // < info(participants)
             socket.on('info', (participants) => {
-                var entry = document.createElement('LI');
+                var entry = document.createElement('li');
                 entry.innerHTML = '[' + new Array(...movies).join(', ') + '] &gt; info(' + participants + ')';
                 messages.appendChild(entry);
                 messages.scrollTo(0, messages.scrollHeight);
