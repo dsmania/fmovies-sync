@@ -5,7 +5,7 @@ var lastEvents = new Map();
 io.on('connection', (socket) => {
     socket.on('join', (movie) => {
         socket.join(movie, () => {
-            socket.emit('adjust', new Date().getTime());
+            socket.emit('adjust', new Date().getTime(), process.env.npm_package_version);
             var lastEvent = lastEvents.get(movie);
             if (lastEvent != null) {
                 socket.emit('sync', lastEvent.command, lastEvent.position, lastEvent.dateTime);

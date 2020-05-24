@@ -1,6 +1,7 @@
 v0.1.2
  + Participant count added to synchronize tooltip
  + Per movie fixes added
+ + Version check added
  * Icon size adjusted for different resolutions
 
 v0.1.1
