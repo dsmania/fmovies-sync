@@ -22,13 +22,14 @@
     var timeout;
     var timeAdjust = 0;
     var numberOfParticipants = 0;
-    var versionMismatch = false;
+    var serverFromVersion;
 
     const socket = io('https://fmovies-sync.herokuapp.com/');
 
     socket.on('adjust', (serverTime, serverVersion) => {
         timeAdjust = new Date().getTime() - serverTime;
-        checkVersion(serverVersion);
+        serverFromVersion = serverVersion;
+        checkVersion();
     });
     socket.on('sync', (command, position, dateTime) => {
         dateTime += timeAdjust;
@@ -243,6 +244,7 @@
         };
         fixButtonsSize();
         player.on('resize', fixButtonsSize);
+        checkVersion();
     };
     if (buttonContainer != null) {
         layoutUi();
@@ -274,12 +276,11 @@
         });
     }
 
-    function checkVersion(serverVersion) {
-        if (versionMismatch) {
+    function checkVersion() {
+        if (serverFromVersion == null) {
             return;
         }
-        versionMismatch = serverVersion != GM_info.script.version
-        if (versionMismatch) {
+        if (serverFromVersion != GM_info.script.version) {
             socket.disconnect()
             syncButtonIconGlyph.innerHTML = '&nbsp;!';
             syncButtonTooltipText.innerHTML = 'Version mismatch.<br/>Update script.';
