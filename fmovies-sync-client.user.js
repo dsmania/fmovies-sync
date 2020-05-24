@@ -282,10 +282,10 @@
         }
         if (serverFromVersion != GM_info.script.version) {
             socket.disconnect()
-            syncButtonIconGlyph.innerHTML = '&nbsp;!';
-            syncButtonTooltipText.innerHTML = 'Version mismatch.<br/>Update script.';
+            syncButtonIconGlyph.innerHTML = '!';
+            syncButtonTooltipText.innerHTML = 'Version mismatch.<br/>Click to update.';
             syncButton.onclick = (e) => {
-                window.open('https://github.com/dsmania/fmovies-sync/raw/master/fmovies-sync-client.user.js', '_blank').focus();
+                window.open('https://github.com/dsmania/fmovies-sync/raw/master/fmovies-sync-client.user.js');
             };
         }
     }
